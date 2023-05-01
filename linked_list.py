@@ -1,7 +1,7 @@
 from enum import Enum
 import uuid
 import datetime
-
+import random
 class Role(Enum):
     QUEST = 1
     MEMBER = 2
@@ -18,6 +18,7 @@ class Data():
         self.role = role
         self.id = uuid.uuid4()
         self.createdAt = datetime.datetime.now()
+        self.payload = random.randint(0, 1000)
 
     @property 
     def name(self):
@@ -67,8 +68,9 @@ class Item():
     @staticmethod
     def newItemByData(data):
         item = Item(data.name, data.role)
-        item.id = data.id
-        item.createdAt = data.createdAt
+        item.data.payload = data.payload
+        item.data.createdAt = data.createdAt
+        item.data.id = data.id
         return item
 
 
@@ -84,11 +86,20 @@ class LinkedList():
             return self.getLastItem(item.next)
         else:
             return item
-         
+        
+    def AddElement(self, name, role):
+        item = Item(name, role)
+        tail = self.getLastItem(self.head)
+        if tail:
+            tail.next = item 
+        else:
+            self.head = item            
+
 
     def AddElementByData(self, data):
         item = Item.newItemByData(data)
         tail = self.getLastItem(self.head)
+        
         if tail:
             tail.next = item 
         else:
@@ -139,9 +150,42 @@ class LinkedList():
 
         # if current.next:
 
+    def bubble_sort(self):
+        if not self.head:
+            return
         
+        swapped = True
+        while swapped:
+            swapped = False
+            current = self.head
+
+            while current.next:
+                if current.data.payload > current.next.data.payload:
+                    current.data, current.next.data = current.next.data, current.data 
+                    swapped = True
+                current = current.next
+
+
+    def printRatingRecursion(self, item):
+        if not item:
+            return
+
+    
+        # for i in range(len(data_sort)):
+        #     for j in range(len(data_sort)-1):
+        #         if data_sort[j] > data_sort[j+1]:
+        #             data_sort[j], data_sort[j+1] = data_sort[j+1], data_sort[j]
+        
+        
+        print(f'name: {item.data.name},  payload: {item.data.payload}')
+        if item.next:
+            self.printRatingRecursion(item.next)
         
 
+    def printRating (self):
+        item = self.head
+        self.printRatingRecursion(item)
+        
 
 
 
@@ -149,20 +193,46 @@ class LinkedList():
 llist = LinkedList()
 
 d1 = Data('Sergey', Role.MEMBER)
+# print (d1.payload)
+d1.payload = 200
+# print(d1.payload)
 
-try: 
-    d1.name = "ckkfkfkfkf sshshsh shshshs hshshshhs"
-except ValueError:
-    print('Input name with max length no mor 24 symbols')
-    newName = input('> ')
-    d1.name = newName
-
+# try: 
+#     d1.name = "ckkfkfkfkf sshshsh shshshs hshshshhs"
+# except ValueError:
+#     print('Input name with max length no mor 24 symbols')
+#     newName = input('> ')
+#     d1.name = newName
 
 llist.AddElementByData(d1)
-llist.AddElementByData(Data('Igor', Role.QUEST))
 
-byte_array = llist.serialize()
-print(byte_array)
+llist.AddElement('Maxim', Role.MEMBER)
+llist.AddElement('Igor', Role.QUEST)
+llist.AddElement('Shakir', Role.ADMINISTRATOR)
+llist.AddElement('Nikolay', Role.MEMBER)
+llist.AddElement('Egor', Role.QUEST)
+llist.AddElement('Nastya', Role.ADMINISTRATOR)
+
+# llist.printRating()
+
+llist.bubble_sort()
+
+llist.printRating()
+
+# import pickle
+# filename = 'llist.pkl'
+
+# with open(filename, 'wb') as file:
+#     pickle.dump(llist, file)
+
+
+# with open(filename, 'rb') as file:
+#     data = pickle.load(file)
+# print(data)
+
+
+# byte_array = llist.serialize()
+# print(byte_array)
 
 # llist.toString()
 
